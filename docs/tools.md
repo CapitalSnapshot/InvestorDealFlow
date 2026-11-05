@@ -96,12 +96,12 @@ No input is required. Filters combine with AND.
       "sector": "fintech",
       "location": "Germany",
       "stage": "seed",
-      "readiness_score": 100,
+      "readiness_score": 96,
       "raising": {
         "amount_eur": 1800000,
         "instrument": "Equity",
         "status": "in_progress",
-        "expected_close": "2027-02-01"
+        "expected_close": "2027-02-26"
       }
     }
   ]
@@ -112,8 +112,8 @@ All twelve rows from the same call. Each row also has `tagline`, which the table
 
 | id | name | sector | location | stage | readiness_score | raising |
 |---|---|---|---|---|---|---|
-| cs-1 | Kiezpay | fintech | Germany | seed | 100 | 1,800,000 EUR, Equity |
-| cs-2 | Croia Health | healthtech | Ireland | pre-seed | 100 | 600,000 EUR, Convertible Note |
+| cs-1 | Kiezpay | fintech | Germany | seed | 96 | 1,800,000 EUR, Equity |
+| cs-2 | Croia Health | healthtech | Ireland | pre-seed | 93 | 600,000 EUR, Convertible Note |
 | cs-3 | Tur Energy | climatetech | Ireland | pre-seed | 56 | 450,000 EUR, Convertible Note |
 | cs-4 | Ferrybank Analytics | regtech | Ireland | seed | 90 | 1,200,000 EUR, Convertible Note |
 | cs-5 | Spreewerk Robotics | robotics | Germany | seed | 30 | 2,500,000 EUR, Equity |
@@ -125,9 +125,9 @@ All twelve rows from the same call. Each row also has `tagline`, which the table
 | cs-11 | Brackwater Foods | foodtech | Ireland | pre-seed | 10 | `null` |
 | cs-12 | Lanta Studio | edtech | Germany | pre-seed | 10 | `null` |
 
-Every non-null `raising` had `"status": "in_progress"` and `"expected_close": "2027-02-01"`.
+Every non-null `raising` had `"status": "in_progress"`, and each company has its own `expected_close`, from 2027-01-15 (`cs-9`) to 2027-07-30 (`cs-10`). `cs-9` reads 100 here because the tool's scale stops at 100; the platform's own score for it is 115.
 
-Other calls on the same day:
+Other calls on 2 October 2026, with the same results on 4 November:
 
 - `list_startups {"location": "Ireland", "stage": "seed"}` returned 3 rows: `cs-4`, `cs-8`, `cs-9`.
 - `list_startups {"location": "Dublin"}` returned `"result_count": 0` and `"startups": []`.
@@ -181,10 +181,10 @@ Other calls on the same day:
       "amount_eur": 600000,
       "instrument": "Convertible Note",
       "status": "in_progress",
-      "expected_close": "2027-02-01"
+      "expected_close": "2027-03-19"
     },
     "traction": "Early revenue. Pilot with two Irish hospital groups, 340 monitored patients, HSE procurement conversation open",
-    "readiness_score": 100,
+    "readiness_score": 93,
     "cap_table_flags": [],
     "data_room_completeness_pct": 100
   }
@@ -227,8 +227,8 @@ Other calls on the same day:
 {
   "demo_notice": "NOTE: ...",
   "startup": "Croia Health",
-  "overall_score": 100,
-  "scale": "0 to 100; professional verification is reported separately in the verification field, not added to the score",
+  "overall_score": 93,
+  "scale": "0 to 100. Overall is the category points after any cap, plus the verification bonus (accountant +10, legal +5), limited to 100 on this scale. The platform's own internal score can reach 115.",
   "score_label": "Fundable",
   "verification": {
     "accountant_verified": false,
@@ -241,21 +241,27 @@ Other calls on the same day:
     "detail": null
   },
   "composition": {
-    "base_categories": "103/105 earned, counted as 100/100 (base is capped at 100)",
-    "verification_bonus": "0/15"
+    "base_categories": "93 earned of 105 available (the breakdown rows added up)",
+    "adjustments": [],
+    "verification_bonus": "0/15",
+    "overall_check": "93 = 93",
+    "overall_check_note": null,
+    "reconciles": true
   },
   "category_breakdown": {
-    "Runway": "25/25",
+    "Runway": "20/25",
     "Gross margin": "10/10",
     "Retention (NRR)": "3/5",
     "Cap table": "5/5",
     "Team bios": "5/5",
     "Round terms": "5/5",
-    "MRR growth": "10/10",
+    "MRR growth": "5/10",
     "Data room": "20/20",
     "VC interview": "20/20"
   },
   "top_gaps": [
+    "Runway (20/25): 25 pts at 12+ months, 20 at 6+, 10 at 3+.",
+    "MRR growth (5/10): 10 pts at 5%+ MoM, 5 pts at any positive growth.",
     "Retention (NRR) (3/5): 5 pts at 100%+, 3 at 80%+. Lower churn = higher NRR."
   ]
 }
@@ -263,24 +269,54 @@ Other calls on the same day:
 
 The category names in `category_breakdown` are the ones the server returns. They differ from the list in the tool description. Each value is an `"earned/max"` string.
 
-A verified company, `get_readiness_score {"id": "cs-9"}` (Verdipay), on the same day:
+`composition` shows how `overall_score` is made, so the parts add up: `base_categories` is the rows added up, `adjustments` lists each cap or limit as signed points, `verification_bonus` is what professional verification adds, `overall_check` writes the sum out, and `reconciles` is `true` when it equals `overall_score`.
+
+A company with a cap applied, `get_readiness_score {"id": "cs-7"}` (Mabel Labs), on 4 November 2026. Only these fields are shown:
 
 ```json
 {
+  "overall_score": 80,
+  "composition": {
+    "base_categories": "85 earned of 105 available (the breakdown rows added up)",
+    "adjustments": [
+      { "label": "Score capped at 80: VC interview attempted, score below 70", "points": -5 }
+    ],
+    "verification_bonus": "0/15",
+    "overall_check": "85 - 5 = 80",
+    "overall_check_note": null,
+    "reconciles": true
+  }
+}
+```
+
+A verified company, `get_readiness_score {"id": "cs-9"}` (Verdipay), on the same day. Only these fields are shown:
+
+```json
+{
+  "overall_score": 100,
   "score_label": "Verified",
   "verification": {
     "accountant_verified": true,
     "legal_verified": true,
     "note": "accountant verified +10, legal verified +5 (platform-internal score with bonuses: 115)"
   },
+  "score_confidence": {
+    "level": "medium",
+    "label": "Accountant and legal verified; figures not yet bank-connected",
+    "detail": null
+  },
   "composition": {
-    "base_categories": "103/105 earned, counted as 100/100 (base is capped at 100)",
-    "verification_bonus": "15/15 (accountant verified +10, legal verified +5)"
+    "base_categories": "103 earned of 105 available (the breakdown rows added up)",
+    "adjustments": [
+      { "label": "Base score limited to 100", "points": -3 }
+    ],
+    "verification_bonus": "15/15 (accountant verified +10, legal verified +5)",
+    "overall_check": "103 - 3 = 100",
+    "overall_check_note": "+15 verification bonus is not shown because the scale is limited to 100",
+    "reconciles": true
   }
 }
 ```
-
-(Only these fields are shown. Apart from `startup`, every other field matched the cs-2 response, including `overall_score` 100.)
 
 ---
 
@@ -370,7 +406,7 @@ Holder rows have `name`, `type`, `share_class` and `pct`. The description also m
 }
 ```
 
-In the sandbox, only `cs-2` (Croia Health) has Q&A switched on. The answer is written by a language model from the company's facts and the one document its founder has shared. The wording differs from call to call.
+In the sandbox, `cs-1` (Kiezpay), `cs-2` (Croia Health), `cs-4` (Ferrybank Analytics) and `cs-9` (Verdipay) have Q&A switched on. The answer is written by a language model from the company's facts and the one document its founder has shared. The wording differs from call to call.
 
 **Example call:** `ask_startup {"id": "cs-2", "question": "Which documents has the founder shared, and what does the company build?"}`
 
@@ -386,13 +422,13 @@ In the sandbox, only `cs-2` (Croia Health) has Q&A switched on. The answer is wr
 
 `answer` is free text and may contain Markdown.
 
-**Q&A switched off**, `ask_startup {"id": "cs-1", "question": "What does the company build?"}`. This is a normal result, not an error:
+**Q&A switched off**, `ask_startup {"id": "cs-3", "question": "What does the company build?"}`. This is a normal result, not an error:
 
 ```json
 {
   "demo_notice": "NOTE: ...",
-  "startup": "Kiezpay",
-  "answer": "Kiezpay has not enabled agent Q&A. The founder controls this setting; the structured tools (profile, readiness, cap table, data room status) remain available."
+  "startup": "Tur Energy",
+  "answer": "Tur Energy has not enabled agent Q&A. The founder controls this setting; the structured tools (profile, readiness, cap table, data room status) remain available."
 }
 ```
 

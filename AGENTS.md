@@ -100,7 +100,7 @@ Run these in order against the sandbox. Each check states what you should see.
 6. `list_startups {"location": "Ireland", "stage": "seed"}`: three rows, `cs-4`, `cs-8`, `cs-9`.
 7. `get_startup_profile {"id": "cs-2"}`: `profile.name` is "Croia Health".
 8. `ask_startup {"id": "cs-2", "question": "What does the company build?"}`: an answer about remote cardiac monitoring.
-9. `ask_startup {"id": "cs-1", "question": "What does the company build?"}`: a successful result whose `answer` says Kiezpay has not enabled agent Q&A.
+9. `ask_startup {"id": "cs-3", "question": "What does the company build?"}`: a successful result whose `answer` says Tur Energy has not enabled agent Q&A.
 10. `get_startup_profile {"id": "cs-9999"}`: `isError: true`, with text starting "No startup found".
 11. A request with a made-up `mcp-session-id`: HTTP 404, error code `-32001`. Your client re-initialises and succeeds.
 12. Refresh: a new `refresh_token`, different from the old one. Store it, then make one more `list_startups` call with the new access token.

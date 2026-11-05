@@ -10,27 +10,28 @@ The sandbox holds 12 fictional companies, `cs-1` to `cs-12`. The companies, foun
 
 | id | name | sector | location | stage | Q&A |
 |---|---|---|---|---|---|
-| cs-1 | Kiezpay | fintech | Germany | seed | off |
+| cs-1 | Kiezpay | fintech | Germany | seed | **on** |
 | cs-2 | Croia Health | healthtech | Ireland | pre-seed | **on** |
 | cs-3 | Tur Energy | climatetech | Ireland | pre-seed | off |
-| cs-4 | Ferrybank Analytics | regtech | Ireland | seed | off |
+| cs-4 | Ferrybank Analytics | regtech | Ireland | seed | **on** |
 | cs-5 | Spreewerk Robotics | robotics | Germany | seed | off |
 | cs-6 | Anchor Line | logistics | Ireland | pre-seed | off |
 | cs-7 | Mabel Labs | devtools | Germany | pre-seed | off |
 | cs-8 | Gorse Bioworks | biotech | Ireland | seed | off |
-| cs-9 | Verdipay | fintech | Ireland | seed | off |
+| cs-9 | Verdipay | fintech | Ireland | seed | **on** |
 | cs-10 | Harbour Loop | circular economy | Germany | pre-seed | off |
 | cs-11 | Brackwater Foods | foodtech | Ireland | pre-seed | off |
 | cs-12 | Lanta Studio | edtech | Germany | pre-seed | off |
 
-[tools.md](tools.md#list_startups) has readiness scores and round terms as recorded on 2 October 2026.
+[tools.md](tools.md#list_startups) has readiness scores and round terms as recorded on 4 November 2026.
 
 Useful test cases:
 
-- `cs-2` has Q&A switched on. `ask_startup` answers from one shared document, "Investor briefing.pdf". Every other company returns the "has not enabled agent Q&A" answer.
+- `cs-1`, `cs-2`, `cs-4` and `cs-9` have Q&A switched on. `ask_startup` answers from one shared document per company, "Investor briefing.pdf". The other eight companies, `cs-3` (Tur Energy) among them, return the "has not enabled agent Q&A" answer.
 - `cs-9` is professionally verified (`score_label` "Verified").
 - `cs-11` and `cs-12` have no current round (`raising` is `null`).
-- `cs-5` (30), `cs-10` (25), `cs-11` and `cs-12` (10 each) had the lowest readiness scores on 2 October.
+- `cs-5` (30), `cs-10` (25), `cs-11` and `cs-12` (10 each) had the lowest readiness scores on 4 November.
+- `cs-7` (Mabel Labs) has a cap applied to its score: the `composition` in `get_readiness_score` shows it as an adjustment.
 
 ## Nightly reset
 
